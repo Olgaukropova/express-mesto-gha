@@ -50,8 +50,58 @@ const createUser = (req, res) => {
       }));
 };
 
+const updateUser = (req, res) => {
+  // console.log('req.body', req.body);
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.params.id, { name, about })
+    .then((user) => res.status(200).send({ user }))
+    .catch((err) => {
+      if (err.message === 'Not Found') {
+        res
+          .status(404)//не работает
+          .send({
+            message: 'User not found',
+          });
+      } else {
+        res
+          .status(500)
+          .send({
+            message: 'Internal Server Error',
+            err: err.message,
+            stack: err.stack,
+          });
+      }
+    });
+};
+
+const updateAvatar = (req, res) => {
+  // console.log('req.body', req.body);
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.params.id, { avatar })
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.message === 'Not Found') {
+        res
+          .status(404)//не работает
+          .send({
+            message: 'User not found',
+          });
+      } else {
+        res
+          .status(500)
+          .send({
+            message: 'Internal Server Error',
+            err: err.message,
+            stack: err.stack,
+          });
+      }
+    });
+};
+
 module.exports = {
   getUsers,
   getUserById,
   createUser,
+  updateUser,
+  updateAvatar,
 };
