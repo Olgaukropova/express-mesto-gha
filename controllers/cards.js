@@ -45,7 +45,7 @@ const deleteCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res
-          .status(404)
+          .status(400)
           .send({ message: 'Карточка с указанным _id не найдена.' });
       } else {
         res
@@ -72,13 +72,13 @@ const likeCard = (req, res) => {
       // console.log(err.message);
       if (err.message === 'Указанный _id не найден') {
         res
-          .status(404)
+          .status(400)
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
       } else if (err.name === 'Error') { // ошибка400 выходит, мессадж нет
         res
-          .status(400)
+          .status(404)
           .send({
             message: 'Переданы некорректные данные для постановки лайка. ',
           });
@@ -107,13 +107,13 @@ const dislikeCard = (req, res) => {
       console.log(err.message);
       if (err.message === 'Указанный _id не найден') {
         res
-          .status(404)
+          .status(400)
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
       } else if (err.name === 'Error') { // ошибка400 выходит, мессадж нет
         res
-          .status(400)
+          .status(404)
           .send({
             message: 'Переданы некорректные данные для снятия лайка. ',
           });

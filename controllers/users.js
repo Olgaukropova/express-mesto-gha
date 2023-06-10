@@ -72,10 +72,10 @@ const createUser = (req, res) => {
 const updateUser = (req, res) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.params.id, { name, about }, { runValidators: true })
+  User.findByIdAndUpdate(req.params.id, { name, about }, { new: true, runValidators: true })
     // console.log(req.params.id)
     .orFail(new Error('user not found'))
-    .then(({ user }) => {
+    .then((user) => {
       res.status(200).send({ user });
     })
     .catch((err) => {
