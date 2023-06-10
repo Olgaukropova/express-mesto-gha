@@ -41,13 +41,25 @@ const getUserById = (req, res) => {
 const createUser = (req, res) => {
   User.create(req.body)
     .then((user) => res.status(201).send(user))
-    .catch((err) => res
-      .status(500)
-      .send({
-        message: 'Interval Server Error',
-        err: err.message,
-        stack: err.stack,
-      }));
+    .catch((err) => {
+      // console.log(err.name);
+      // console.log(err.message);
+      if (err.name === 'ValidationError') {
+        res
+          .status(400)
+          .send({
+            message: 'Переданы некорректные данные при создании пользователя.',
+          });
+      } else {
+        res
+          .status(500)
+          .send({
+            message: 'Interval Server Error',
+            err: err.message,
+            stack: err.stack,
+          });
+      }
+    });
 };
 
 const updateUser = (req, res) => {
