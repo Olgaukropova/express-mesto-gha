@@ -17,12 +17,12 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   User.findById(req.params.id)
     .orFail(() => new Error('Not found'))
-    .then((user) => res.status(200)
+    .then((user) => res.status(201)
       .send(user))
     .catch((err) => {
       if (err.message === 'Not found') {
         res
-          .status(404)
+          .status(400)
           .send({
             message: 'User not found',
           });
