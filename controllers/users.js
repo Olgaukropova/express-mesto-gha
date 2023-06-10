@@ -55,11 +55,15 @@ const updateUser = (req, res) => {
 
   User.findByIdAndUpdate(req.params.id, { name, about }, { runValidators: true })
     // console.log(req.params.id)
-    .orFail(() => new Error('ValidationError'))
-    .then((user) => res.status(200).send({ user }))
-    .catch((err, user) => {
-      if (!user) {
+    .orFail(new Error('user not found'))
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch((err) => {
+      // console.log(err.name);
+      if (err.message === 'user not found') {
         res
+          .status(404)
           .send({
             message: 'Пользователь с указанным _id не найден.',
           });
@@ -84,28 +88,30 @@ const updateUser = (req, res) => {
 const updateAvatar = (req, res) => {
   // console.log('req.body', req.body);
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.params.id, { avatar })
+  User.findByIdAndUpdate(req.params.id, { avatar }, { runValidators: true })
+    .orFail(new Error('user not found'))
     .then((user) => {
-      if (user === null) {
-        res
-          .send({
-            message: 'User not found',
-          });
-      }
-      return res.status(200).send({ user });
+      res.status(200).send({ user });
     })
     .catch((err) => {
-      if (err.message === 'Not Found') {
+      // console.log(err.name);
+      if (err.message === 'user not found') {
         res
           .status(404)
           .send({
-            message: 'User not found',
+            message: 'Пользователь с указанным _id не найден.',
+          });
+      } else if (err.name === 'ValidationError') {
+        res
+          .status(400)
+          .send({
+            message: 'Переданы некорректные данные при обновлении аватара.',
           });
       } else {
         res
           .status(500)
           .send({
-            message: 'default error',
+            message: 'Ошибка по умолчанию',
             err: err.message,
             stack: err.stack,
           });

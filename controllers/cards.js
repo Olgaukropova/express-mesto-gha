@@ -34,15 +34,29 @@ const createCard = (req, res) => {
       }
     });
 };
-
 // eslint-disable-next-line no-unused-vars
 // module.exports.createCard = (req, res) => {
 //   console.log(req.user._id); // _id станет доступен
 // };
 const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findByIdAndRemove(req.params.id, { runValidators: true })
+    .orFail(new Error('CastError'))
     .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }))
-    .catch();
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res
+          .status(404)
+          .send({ message: 'Карточка с указанным _id не найдена.' });
+      } else {
+        res
+          .status(500)
+          .send({
+            message: 'default error',
+            err: err.message,
+            stack: err.stack,
+          });
+      }
+    });
 };
 
 const likeCard = (req, res) => {
@@ -51,9 +65,11 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .orFail(() => new Error('Указанный _id не найден'))
+    //.orFail(() => new Error('Указанный _id не найден'))
     .then((card) => res.status(200).send({ card, message: 'Лайк успешно поставлен' }))
     .catch((err) => {
+      console.log(err.message);
+      console.log(err.name);
       if (err.message.includes('validation failed')) {
         res.status(404).send({ message: 'Вы ввели некорректные данные' });
       } else {
