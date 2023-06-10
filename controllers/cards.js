@@ -65,18 +65,28 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    //.orFail(() => new Error('Указанный _id не найден'))
+    .orFail(() => new Error('Указанный _id не найден'))
     .then((card) => res.status(200).send({ card, message: 'Лайк успешно поставлен' }))
     .catch((err) => {
-      console.log(err.message);
-      console.log(err.name);
-      if (err.message.includes('validation failed')) {
-        res.status(404).send({ message: 'Вы ввели некорректные данные' });
+      // console.log(err.name);
+      // console.log(err.message);
+      if (err.message === 'Указанный _id не найден') {
+        res
+          .status(404)
+          .send({
+            message: 'Карточка с указанным _id не найдена.',
+          });
+      } else if (err.name === 'Error') {// ошибка400 выходит, мессадж нет
+        res
+          .status(400)
+          .send({
+            message: 'Переданы некорректные данные для постановки лайка. ',
+          });
       } else {
         res
           .status(500)
           .send({
-            message: 'default error',
+            message: 'Ошибка по умолчанию',
             err: err.message,
             stack: err.stack,
           });
@@ -93,13 +103,25 @@ const dislikeCard = (req, res) => {
     .orFail(() => new Error('Указанный _id не найден'))
     .then((card) => res.status(200).send({ card, message: 'Лайк удален' }))
     .catch((err) => {
-      if (err.message.includes('validation failed')) {
-        res.status(404).send({ message: 'Вы ввели некорректные данные' });
+      console.log(err.name);
+      console.log(err.message);
+      if (err.message === 'Указанный _id не найден') {
+        res
+          .status(404)
+          .send({
+            message: 'Карточка с указанным _id не найдена.',
+          });
+      } else if (err.name === 'Error') {// ошибка400 выходит, мессадж нет
+        res
+          .status(400)
+          .send({
+            message: 'Переданы некорректные данные для снятия лайка. ',
+          });
       } else {
         res
           .status(500)
           .send({
-            message: 'default error',
+            message: 'Ошибка по умолчанию',
             err: err.message,
             stack: err.stack,
           });
