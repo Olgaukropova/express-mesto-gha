@@ -75,7 +75,7 @@ const updateUser = (req, res) => {
   User.findByIdAndUpdate(req.params.id, { name, about }, { runValidators: true })
     // console.log(req.params.id)
     .orFail(new Error('user not found'))
-    .then((user) => {
+    .then(({ user }) => {
       res.status(200).send({ user });
     })
     .catch((err) => {
