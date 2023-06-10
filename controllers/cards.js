@@ -8,7 +8,7 @@ const getCards = (req, res) => {
     .catch((err) => res
       .status(500)
       .send({
-        message: 'Interval Server Error',
+        message: 'default error',
         err: err.message,
         stack: err.stack,
       }));
@@ -27,7 +27,7 @@ const createCard = (req, res) => {
         res
           .status(500)
           .send({
-            message: 'Interval Server Error',
+            message: 'default error',
             err: err.message,
             stack: err.stack,
           });
@@ -60,7 +60,7 @@ const likeCard = (req, res) => {
         res
           .status(500)
           .send({
-            message: 'Interval Server Error',
+            message: 'default error',
             err: err.message,
             stack: err.stack,
           });
@@ -83,7 +83,7 @@ const dislikeCard = (req, res) => {
         res
           .status(500)
           .send({
-            message: 'Interval Server Error',
+            message: 'default error',
             err: err.message,
             stack: err.stack,
           });

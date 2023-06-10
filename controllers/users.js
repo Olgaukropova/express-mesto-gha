@@ -8,7 +8,7 @@ const getUsers = (req, res) => {
     .catch((err) => res
       .status(500)
       .send({
-        message: 'Interval Server Error',
+        message: 'default error',
         err: err.message,
         stack: err.stack,
       }));
@@ -30,7 +30,7 @@ const getUserById = (req, res) => {
         res
           .status(500)
           .send({
-            message: 'Internal Server Error',
+            message: 'default error',
             err: err.message,
             stack: err.stack,
           });
@@ -51,22 +51,29 @@ const createUser = (req, res) => {
 };
 
 const updateUser = (req, res) => {
-  // console.log('req.body', req.body);
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.params.id, { name, about })
+
+  User.findByIdAndUpdate(req.params.id, { name, about }, { runValidators: true })
+    // console.log(req.params.id)
+    .orFail(() => new Error('ValidationError'))
     .then((user) => res.status(200).send({ user }))
-    .catch((err) => {
-      if (err.message === 'Not Found') {
+    .catch((err, user) => {
+      if (!user) {
         res
-          .status(404)//не работает
           .send({
-            message: 'User not found',
+            message: 'Пользователь с указанным _id не найден.',
+          });
+      } else if (err.name === 'ValidationError') {
+        res
+          .status(400)
+          .send({
+            message: 'Переданы некорректные данные при обновлении профиля.',
           });
       } else {
         res
           .status(500)
           .send({
-            message: 'Internal Server Error',
+            message: 'Ошибка по умолчанию',
             err: err.message,
             stack: err.stack,
           });
@@ -78,11 +85,19 @@ const updateAvatar = (req, res) => {
   // console.log('req.body', req.body);
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.params.id, { avatar })
-    .then((user) => res.status(200).send(user))
+    .then((user) => {
+      if (user === null) {
+        res
+          .send({
+            message: 'User not found',
+          });
+      }
+      return res.status(200).send({ user });
+    })
     .catch((err) => {
       if (err.message === 'Not Found') {
         res
-          .status(404)//не работает
+          .status(404)
           .send({
             message: 'User not found',
           });
@@ -90,7 +105,7 @@ const updateAvatar = (req, res) => {
         res
           .status(500)
           .send({
-            message: 'Internal Server Error',
+            message: 'default error',
             err: err.message,
             stack: err.stack,
           });
