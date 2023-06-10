@@ -16,13 +16,20 @@ const getUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   User.findById(req.params.id)
-    .orFail(() => new Error('Not found'))
-    .then((user) => res.status(201)
+    .orFail(() => new Error('CastError'))
+    .then((user) => res.status(200)
       .send(user))
     .catch((err) => {
-      if (err.message === 'Not found') {
+      console.log(err.name);
+      if (err.message === 'CastError') {
         res
           .status(400)
+          .send({
+            message: 'User not found',
+          });
+      } else if (err.message === 'Not found') {
+        res
+          .status(404)
           .send({
             message: 'User not found',
           });
