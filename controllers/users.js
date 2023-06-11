@@ -80,7 +80,7 @@ const updateUser = (req, res) => {
     })
     .catch((err) => {
       // console.log(err.name);
-      if (err.message === 'user not found') {
+      if (err.name === 'user not found') {
         res
           .status(404)
           .send({
