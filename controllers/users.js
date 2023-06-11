@@ -20,7 +20,7 @@ const getUserById = (req, res) => {
     .then((user) => res.status(200)
       .send(user))
     .catch((err) => {
-      console.log(err.name);
+      // console.log(err.name);
       if (err.message === 'CastError') {
         res
           .status(400)
