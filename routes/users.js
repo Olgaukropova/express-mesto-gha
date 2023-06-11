@@ -15,6 +15,6 @@ router.post('/users', createUser);
 
 router.patch('/users/me/', updateUser); // обновляет профиль
 
-router.patch('/users/me/avatar/:id', updateAvatar); // обновляет аватар
+router.patch('/users/me/avatar/', updateAvatar); // обновляет аватар
 
 module.exports = router;

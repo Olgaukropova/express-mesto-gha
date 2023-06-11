@@ -19,6 +19,11 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  next();
+});
+
 app.use(userRoutes);
 app.use(cardRoutes);
 
