@@ -13,7 +13,7 @@ router.get('/users/:id', getUserById);
 
 router.post('/users', createUser);
 
-router.patch('/users/me/:id', updateUser); // обновляет профиль
+router.patch('/users/me/', updateUser); // обновляет профиль
 
 router.patch('/users/me/avatar/:id', updateAvatar); // обновляет аватар
 
