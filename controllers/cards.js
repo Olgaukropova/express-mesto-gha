@@ -8,7 +8,7 @@ const getCards = (req, res) => {
     .catch((err) => res
       .status(500)
       .send({
-        message: 'default error',
+        message: 'Ошибка по умолчанию',
         err: err.message,
         stack: err.stack,
       }));
@@ -27,7 +27,7 @@ const createCard = (req, res) => {
         res
           .status(500)
           .send({
-            message: 'default error',
+            message: 'Ошибка по умолчанию',
             err: err.message,
             stack: err.stack,
           });
@@ -119,7 +119,7 @@ const dislikeCard = (req, res) => {
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
-      } else if (err.name === 'CastError' || err.name === 'Bad Request') { // ошибка400 выходит, мессадж нет
+      } else if (err.name === 'CastError' || err.name === 'ValidationError') { // ошибка400 выходит, мессадж нет
         res
           .status(400)
           .send({

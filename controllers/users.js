@@ -8,7 +8,7 @@ const getUsers = (req, res) => {
     .catch((err) => res
       .status(500)
       .send({
-        message: 'default error',
+        message: 'Ошибка по умолчанию',
         err: err.message,
         stack: err.stack,
       }));
@@ -36,7 +36,7 @@ const getUserById = (req, res) => {
         res
           .status(500)
           .send({
-            message: 'default error',
+            message: 'Ошибка по умолчанию',
             err: err.message,
             stack: err.stack,
           });
@@ -60,7 +60,7 @@ const createUser = (req, res) => {
         res
           .status(500)
           .send({
-            message: 'Interval Server Error',
+            message: 'Ошибка по умолчанию',
             err: err.message,
             stack: err.stack,
           });
@@ -76,7 +76,8 @@ const updateUser = (req, res) => {
     .orFail(new Error('user not found'))
     .then((user) => res.status(201).send(user))
     .catch((err) => {
-      // console.log(err.name);
+      console.log(err.name);
+      console.log(err.message);
       if (err.name === 'user not found') {
         res
           .status(404)
@@ -88,6 +89,8 @@ const updateUser = (req, res) => {
           .status(400)
           .send({
             message: 'Переданы некорректные данные при обновлении профиля.',
+            err: err.message,
+            stack: err.stack,
           });
       } else {
         res
