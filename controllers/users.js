@@ -107,7 +107,7 @@ const updateUser = (req, res) => {
 const updateAvatar = (req, res) => {
   // console.log('req.body', req.body);
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.params.id, { avatar }, { runValidators: true })
+  User.findByIdAndUpdate(req.params.id, { avatar }, { new: true, runValidators: true })
     .orFail(new Error('user not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {

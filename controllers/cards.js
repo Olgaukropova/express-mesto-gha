@@ -43,17 +43,17 @@ const deleteCard = (req, res) => {
     .orFail(new Error('Указанный _id не найден'))
     .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }))
     .catch((err) => {
-      if (err.message === 'Указанный _id не найден') {
-        res
-          .status(404)
-          .send({
-            message: 'Карточка с указанным _id не найдена.',
-          });
-      } else if (err.name === 'Error') {
+      if (err.name === 'CastError') {
         res
           .status(400)
           .send({
             message: 'Переданы некорректные данные. ',
+          });
+      } else if (err.message === 'Указанный _id не найден') {
+        res
+          .status(404)
+          .send({
+            message: 'Карточка с указанным _id не найдена.',
           });
       } else {
         res
