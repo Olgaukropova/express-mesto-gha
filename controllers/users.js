@@ -84,13 +84,11 @@ const updateUser = (req, res) => {
           .send({
             message: 'Пользователь с указанным _id не найден.',
           });
-      } else if (err.name === 'ValidationError' || err.name === 'Error') {
+      } else if (err.name === 'ValidationError') {
         res
           .status(400)
           .send({
             message: 'Переданы некорректные данные при обновлении профиля.',
-            err: err.message,
-            stack: err.stack,
           });
       } else {
         res
@@ -107,7 +105,7 @@ const updateUser = (req, res) => {
 const updateAvatar = (req, res) => {
   // console.log('req.body', req.body);
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.params.id, { avatar }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.params.id, { avatar }, { runValidators: true })
     .orFail(new Error('user not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
