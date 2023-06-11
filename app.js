@@ -15,7 +15,6 @@ app.use((req, res, next) => {
   req.user = {
     _id: '6480bc0b5535b896735e95d6',
   };
-
   next();
 });
 
@@ -23,19 +22,13 @@ app.use(userRoutes);
 app.use(cardRoutes);
 
 app.use((req, res) => {
-  // Handle the 404 error
-  console.log('error')
-
-  // const error = new Error('page not found');
-  // error.status = 404;
-  // res.send(error);
+  // console.log('error')
   res
     .status(404)
     .send({
-      message: 'User not found',
+      message: 'page not found',
     });
-}
-);
+});
 
 app.listen(3000, () => {
   console.log('Слушаю порт 3000');

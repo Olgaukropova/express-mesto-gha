@@ -34,10 +34,7 @@ const createCard = (req, res) => {
       }
     });
 };
-// eslint-disable-next-line no-unused-vars
-// module.exports.createCard = (req, res) => {
-//   console.log(req.user._id); // _id станет доступен
-// };
+
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id, { runValidators: true })
     .orFail(new Error('Указанный _id не найден'))
@@ -84,7 +81,7 @@ const likeCard = (req, res) => {
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
-      } else if (err.name === 'CastError') { // ошибка400 выходит, мессадж нет
+      } else if (err.name === 'CastError') {
         res
           .status(400)
           .send({
@@ -111,15 +108,15 @@ const dislikeCard = (req, res) => {
     .orFail(() => new Error('Указанный _id не найден'))
     .then((card) => res.status(200).send({ card, message: 'Лайк удален' }))
     .catch((err) => {
-      console.log(err.name);
-      console.log(err.message);
+      // console.log(err.name);
+      // console.log(err.message);
       if (err.message === 'Указанный _id не найден') {
         res
           .status(404)
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
-      } else if (err.name === 'CastError' || err.name === 'ValidationError') { // ошибка400 выходит, мессадж нет
+      } else if (err.name === 'CastError' || err.name === 'ValidationError') {
         res
           .status(400)
           .send({

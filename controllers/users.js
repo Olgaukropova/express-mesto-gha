@@ -19,7 +19,7 @@ const getUserById = (req, res) => {
     .orFail(() => new Error('Not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      console.log(err.name);
+      // console.log(err.name);
       if (err.message === 'Not found') {
         res
           .status(404)
