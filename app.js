@@ -19,13 +19,23 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  next();
-});
-
 app.use(userRoutes);
 app.use(cardRoutes);
+
+app.use((req, res) => {
+  // Handle the 404 error
+  console.log('error')
+
+  // const error = new Error('page not found');
+  // error.status = 404;
+  // res.send(error);
+  res
+    .status(404)
+    .send({
+      message: 'User not found',
+    });
+}
+);
 
 app.listen(3000, () => {
   console.log('Слушаю порт 3000');
