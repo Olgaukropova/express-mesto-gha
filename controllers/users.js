@@ -22,15 +22,15 @@ const getUserById = (req, res) => {
       // console.log(err.name);
       if (err.message === 'CastError') {
         res
-          .status(400)
+          .status(404)
           .send({
             message: 'User not found',
           });
       } else if (err.message === 'Not found') {
         res
-          .status(404)
+          .status(400)
           .send({
-            message: 'User not found',
+            message: 'Пользователь по указанному _id не найден.',
           });
       } else {
         res
@@ -74,7 +74,7 @@ const updateUser = (req, res) => {
   User.findByIdAndUpdate(req.params.id, { name, about }, { new: true, runValidators: true })
     // console.log(req.params.id)
     .orFail(new Error('user not found'))
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       // console.log(err.name);
       if (err.name === 'user not found') {
@@ -83,7 +83,7 @@ const updateUser = (req, res) => {
           .send({
             message: 'Пользователь с указанным _id не найден.',
           });
-      } else if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError' || err.name === 'Bad Request') {
         res
           .status(400)
           .send({

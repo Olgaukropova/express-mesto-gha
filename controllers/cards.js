@@ -40,18 +40,26 @@ const createCard = (req, res) => {
 // };
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id, { runValidators: true })
-    .orFail(new Error('CastError'))
+    .orFail(new Error('Указанный _id не найден'))
     .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'Указанный _id не найден') {
+        res
+          .status(404)
+          .send({
+            message: 'Карточка с указанным _id не найдена.',
+          });
+      } else if (err.name === 'Error') {
         res
           .status(400)
-          .send({ message: 'Карточка с указанным _id не найдена.' });
+          .send({
+            message: 'Переданы некорректные данные. ',
+          });
       } else {
         res
           .status(500)
           .send({
-            message: 'default error',
+            message: 'Ошибка по умолчанию',
             err: err.message,
             stack: err.stack,
           });
@@ -107,13 +115,13 @@ const dislikeCard = (req, res) => {
       console.log(err.message);
       if (err.message === 'Указанный _id не найден') {
         res
-          .status(400)
+          .status(404)
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
-      } else if (err.name === 'Error') { // ошибка400 выходит, мессадж нет
+      } else if (err.name === 'CastError' || err.name === 'Bad Request') { // ошибка400 выходит, мессадж нет
         res
-          .status(404)
+          .status(400)
           .send({
             message: 'Переданы некорректные данные для снятия лайка. ',
           });
