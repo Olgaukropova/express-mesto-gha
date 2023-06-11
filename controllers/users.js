@@ -80,13 +80,13 @@ const updateUser = (req, res) => {
     })
     .catch((err) => {
       // console.log(err.name);
-      if (err.name === 'user not found') {
+      if (err.message === 'user not found') {
         res
           .status(404)
           .send({
             message: 'Пользователь с указанным _id не найден.',
           });
-      } else if (err.name === 'ValidationError') {
+      } else if (err.message === 'ValidationError') {
         res
           .status(400)
           .send({
