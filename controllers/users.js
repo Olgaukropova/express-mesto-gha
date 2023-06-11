@@ -84,7 +84,7 @@ const updateUser = (req, res) => {
           .send({
             message: 'Пользователь с указанным _id не найден.',
           });
-      } else if (err.name === 'ValidationError' || err.name === 'Bad Request') {
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         res
           .status(400)
           .send({
