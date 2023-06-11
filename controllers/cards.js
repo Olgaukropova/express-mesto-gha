@@ -76,7 +76,7 @@ const likeCard = (req, res) => {
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
-      } else if (err.name === 'Error') { // ошибка400 выходит, мессадж нет
+      } else if (err.name === 'CastError') { // ошибка400 выходит, мессадж нет
         res
           .status(400)
           .send({
