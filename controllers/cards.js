@@ -1,35 +1,30 @@
 const Card = require('../models/cards');
+const { BadRequestError, NotFoundError, DefaultError } = require('../errors/errors');
 
 const getCards = (req, res) => {
   Card.find({})
     .then((card) => res
       .status(200)
       .send(card))
-    .catch((err) => res
-      .status(500)
+    .catch(() => res
+      .status(DefaultError)
       .send({
         message: 'Ошибка по умолчанию',
-        err: err.message,
-        stack: err.stack,
       }));
 };
 
 const createCard = (req, res) => {
-  Card.create({
-    ...req.body,
-    owner: req.user._id,
-  })
+  const { name, link } = req.body;
+  Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
-        res.status(400).send({ message: 'Вы ввели некорректные данные' });
+        res.status(BadRequestError).send({ message: 'Вы ввели некорректные данные' });
       } else {
         res
-          .status(500)
+          .status(DefaultError)
           .send({
             message: 'Ошибка по умолчанию',
-            err: err.message,
-            stack: err.stack,
           });
       }
     });
@@ -42,23 +37,21 @@ const deleteCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         res
-          .status(400)
+          .status(BadRequestError)
           .send({
             message: 'Переданы некорректные данные. ',
           });
       } else if (err.message === 'Указанный _id не найден') {
         res
-          .status(404)
+          .status(NotFoundError)
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
       } else {
         res
-          .status(500)
+          .status(DefaultError)
           .send({
             message: 'Ошибка по умолчанию',
-            err: err.message,
-            stack: err.stack,
           });
       }
     });
@@ -77,23 +70,21 @@ const likeCard = (req, res) => {
       // console.log(err.message);
       if (err.message === 'Указанный _id не найден') {
         res
-          .status(404)
+          .status(NotFoundError)
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
       } else if (err.name === 'CastError') {
         res
-          .status(400)
+          .status(BadRequestError)
           .send({
             message: 'Переданы некорректные данные для постановки лайка. ',
           });
       } else {
         res
-          .status(500)
+          .status(DefaultError)
           .send({
             message: 'Ошибка по умолчанию',
-            err: err.message,
-            stack: err.stack,
           });
       }
     });
@@ -112,23 +103,21 @@ const dislikeCard = (req, res) => {
       // console.log(err.message);
       if (err.message === 'Указанный _id не найден') {
         res
-          .status(404)
+          .status(NotFoundError)
           .send({
             message: 'Карточка с указанным _id не найдена.',
           });
       } else if (err.name === 'CastError' || err.name === 'ValidationError') {
         res
-          .status(400)
+          .status(BadRequestError)
           .send({
             message: 'Переданы некорректные данные для снятия лайка. ',
           });
       } else {
         res
-          .status(500)
+          .status(DefaultError)
           .send({
             message: 'Ошибка по умолчанию',
-            err: err.message,
-            stack: err.stack,
           });
       }
     });
