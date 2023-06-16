@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/users');
 const { BadRequestError, NotFoundError, DefaultError } = require('../errors/errors');
 
@@ -42,8 +44,17 @@ const getUserById = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  const {
+    name, about, avatar, email,
+  } = req.body;
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       // console.log(err.name);
@@ -126,10 +137,39 @@ const updateAvatar = (req, res) => {
     });
 };
 
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findOne({ email }).select('+password')
+    .orFail(() => new Error('Пользователь не найден'))
+    .then((user) => {
+      bcrypt.compare(password, user.password)
+        .then((isValidUser) => {
+          if (isValidUser) {
+            // создать jwt
+            const jwt = jsonWebToken.sign({
+              _id: user._id,
+            }, 'SECRET');
+            // прикрепить его к куке
+            res.cookie('jwt', jwt, {
+              maxAge: 360000,
+              httpOnly: true,
+              sameSite: true,
+            });
+            res.send({ data: user.toJSON() });
+          } else {
+            res.status(403).send({ message: 'Неправильный пароль' });
+          }
+        });
+    })
+    // eslint-disable-next-line no-undef
+    .catch(next);
+};
+
 module.exports = {
   getUsers,
   getUserById,
   createUser,
   updateUser,
   updateAvatar,
+  login,
 };
