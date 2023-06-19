@@ -15,6 +15,66 @@ const getUsers = (req, res) => {
       }));
 };
 
+const login = (req, res, next) => {
+  // console.log('login', req.body);
+  const { email, password } = req.body;
+  User.findOne({ email }).select('+password')
+    .orFail(() => new Error('Пользователь не найден'))
+    .then((user) => {
+      bcrypt.compare(password, user.password)
+        .then((isValidUser) => {
+          if (isValidUser) {
+            // создать jwt
+            const jwt = jsonWebToken.sign({
+              _id: user._id,
+            }, process.env.JWT_SECRET);
+            // прикрепить его к куке
+            // console.log(jwt);
+            res.cookie('jwt', jwt, {
+              maxAge: 360000,
+              httpOnly: true,
+              sameSite: true,
+            });
+            res.send({ data: user.toJSON() });
+          } else {
+            res.status(403).send({ message: 'Неправильный пароль' });
+          }
+        });
+    })
+    // eslint-disable-next-line no-undef
+    .catch(next);
+};
+
+const getInfoUser = (req, res) => {
+  const { _id } = req.user;
+  User.findById(_id)
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch((err) => {
+      // console.log(err.name);
+      if (err.message === 'Not found') {
+        res
+          .status(NotFoundError)
+          .send({
+            message: 'Пользователь по указанному _id не найден.',
+          });
+      } else if (err.name === 'CastError') {
+        res
+          .status(BadRequestError)
+          .send({
+            message: 'Переданы некорректные данные при создании пользователя.',
+          });
+      } else {
+        res
+          .status(DefaultError)
+          .send({
+            message: 'Ошибка по умолчанию',
+          });
+      }
+    });
+};
+
 const getUserById = (req, res) => {
   User.findById(req.params.id)
     .orFail(() => new Error('Not found'))
@@ -137,34 +197,6 @@ const updateAvatar = (req, res) => {
     });
 };
 
-const login = (req, res, next) => {
-  const { email, password } = req.body;
-  User.findOne({ email }).select('+password')
-    .orFail(() => new Error('Пользователь не найден'))
-    .then((user) => {
-      bcrypt.compare(password, user.password)
-        .then((isValidUser) => {
-          if (isValidUser) {
-            // создать jwt
-            const jwt = jsonWebToken.sign({
-              _id: user._id,
-            }, 'SECRET');
-            // прикрепить его к куке
-            res.cookie('jwt', jwt, {
-              maxAge: 360000,
-              httpOnly: true,
-              sameSite: true,
-            });
-            res.send({ data: user.toJSON() });
-          } else {
-            res.status(403).send({ message: 'Неправильный пароль' });
-          }
-        });
-    })
-    // eslint-disable-next-line no-undef
-    .catch(next);
-};
-
 module.exports = {
   getUsers,
   getUserById,
@@ -172,4 +204,5 @@ module.exports = {
   updateUser,
   updateAvatar,
   login,
+  getInfoUser,
 };
