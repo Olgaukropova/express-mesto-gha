@@ -7,16 +7,20 @@ const {
   getInfoUser,
 } = require('../controllers/users');
 
+const {
+  validateUserById,
+  validateUpdateUser,
+  validateUpdateAvatar,
+} = require('../middlewares/validations');
+
 router.get('/users', getUsers); // информация о всех пользователях
 
 router.get('/users/me', getInfoUser); // информация о текущем пользователе
 
-router.get('/users/:id', getUserById); // поиск пользователя по id
+router.get('/users/:id', validateUserById, getUserById); // поиск пользователя по id
 
-// router.post('/users', createUser);
+router.patch('/users/me/', validateUpdateUser, updateUser); // обновляет профиль
 
-router.patch('/users/me/', updateUser); // обновляет профиль
-
-router.patch('/users/me/avatar/', updateAvatar); // обновляет аватар
+router.patch('/users/me/avatar/', validateUpdateAvatar, updateAvatar); // обновляет аватар
 
 module.exports = router;

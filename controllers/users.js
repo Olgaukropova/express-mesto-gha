@@ -5,6 +5,7 @@ const {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
+  ConflictError,
 } = require('../errors/errors');
 
 const getUsers = (req, res, next) => {
@@ -140,6 +141,8 @@ const createUser = (req, res, next) => {
         //   .send({
         //     message: 'Переданы некорректные данные при создании пользователя.',
         //   });
+      } else if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким email уже зарегистрирован.'));
       } else {
         next(err);
         // res
