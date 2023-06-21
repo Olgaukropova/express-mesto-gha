@@ -3,9 +3,8 @@ const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/users');
 const {
   BadRequestError,
-  Forbidden,
+  ForbiddenError,
   NotFoundError,
-  DefaultError,
 } = require('../errors/errors');
 
 const getUsers = (req, res, next) => {
@@ -25,7 +24,7 @@ const login = (req, res, next) => {
   // console.log('login', req.body);
   const { email, password } = req.body;
   User.findOne({ email }).select('+password')
-    .orFail(() => new Error('Пользователь не найден'))
+    .orFail(() => new NotFoundError('Пользователь не найден'))
     .then((user) => {
       bcrypt.compare(password, user.password)
         .then((isValidUser) => {
@@ -43,7 +42,10 @@ const login = (req, res, next) => {
             });
             res.send({ data: user.toJSON() });
           } else {
-            res.status(Forbidden).send({ message: 'Неправильный пароль' });
+            next(new ForbiddenError('Неправильный пароль'));
+            // res
+            //   .status(ForbiddenError)
+            //   .send({ message: 'Неправильный пароль' });
           }
         });
     })
@@ -51,7 +53,7 @@ const login = (req, res, next) => {
     .catch(next);
 };
 
-const getInfoUser = (req, res) => {
+const getInfoUser = (req, res, next) => {
   const { _id } = req.user;
   User.findById(_id)
     .then((user) => {
@@ -60,56 +62,62 @@ const getInfoUser = (req, res) => {
     .catch((err) => {
       // console.log(err.name);
       if (err.message === 'Not found') {
-        res
-          .status(NotFoundError)
-          .send({
-            message: 'Пользователь по указанному _id не найден.',
-          });
+        next(new NotFoundError('Пользователь по указанному _id не найден.'));
+        // res
+        //   .status(NotFoundError)
+        //   .send({
+        //     message: 'Пользователь по указанному _id не найден.',
+        //   });
       } else if (err.name === 'CastError') {
-        res
-          .status(BadRequestError)
-          .send({
-            message: 'Переданы некорректные данные при создании пользователя.',
-          });
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+        // res
+        //   .status(BadRequestError)
+        //   .send({
+        //     message: 'Переданы некорректные данные при создании пользователя.',
+        //   });
       } else {
-        res
-          .status(DefaultError)
-          .send({
-            message: 'Ошибка сервера',
-          });
+        next(err);
+        // res
+        //   .status(DefaultError)
+        //   .send({
+        //     message: 'Ошибка сервера',
+        //   });
       }
     });
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   User.findById(req.params.id)
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new NotFoundError('Not found'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       // console.log(err.name);
       if (err.message === 'Not found') {
-        res
-          .status(NotFoundError)
-          .send({
-            message: 'Пользователь по указанному _id не найден.',
-          });
+        next(new NotFoundError('Пользователь по указанному _id не найден.'));
+        // res
+        //   .status(NotFoundError)
+        //   .send({
+        //     message: 'Пользователь по указанному _id не найден.',
+        //   });
       } else if (err.name === 'CastError') {
-        res
-          .status(BadRequestError)
-          .send({
-            message: 'Переданы некорректные данные при создании пользователя.',
-          });
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+        // res
+        //   .status(BadRequestError)
+        //   .send({
+        //     message: 'Переданы некорректные данные при создании пользователя.',
+        //   });
       } else {
-        res
-          .status(DefaultError)
-          .send({
-            message: 'Ошибка сервера',
-          });
+        next(err);
+        // res
+        //   .status(DefaultError)
+        //   .send({
+        //     message: 'Ошибка сервера',
+        //   });
       }
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name, about, avatar, email,
   } = req.body;
@@ -126,22 +134,24 @@ const createUser = (req, res) => {
       // console.log(err.name);
       // console.log(err.message);
       if (err.name === 'ValidationError') {
-        res
-          .status(BadRequestError)
-          .send({
-            message: 'Переданы некорректные данные при создании пользователя.',
-          });
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+        // res
+        //   .status(BadRequestError)
+        //   .send({
+        //     message: 'Переданы некорректные данные при создании пользователя.',
+        //   });
       } else {
-        res
-          .status(DefaultError)
-          .send({
-            message: 'Ошибка сервера',
-          });
+        next(err);
+        // res
+        //   .status(DefaultError)
+        //   .send({
+        //     message: 'Ошибка сервера',
+        //   });
       }
     });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
@@ -152,28 +162,31 @@ const updateUser = (req, res) => {
       // console.log(err.name);
       // console.log(err.message);
       if (err.name === 'user not found') {
-        res
-          .status(NotFoundError)
-          .send({
-            message: 'Пользователь с указанным _id не найден.',
-          });
+        next(new NotFoundError('Пользователь с указанным _id не найден.'));
+        // res
+        //   .status(NotFoundError)
+        //   .send({
+        //     message: 'Пользователь с указанным _id не найден.',
+        //   });
       } else if (err.name === 'ValidationError') {
-        res
-          .status(BadRequestError)
-          .send({
-            message: 'Переданы некорректные данные при обновлении профиля.',
-          });
+        next(new BadRequestError('Переданы некорректные данные при обновлении профиля.'));
+        // res
+        //   .status(BadRequestError)
+        //   .send({
+        //     message: 'Переданы некорректные данные при обновлении профиля.',
+        //   });
       } else {
-        res
-          .status(DefaultError)
-          .send({
-            message: 'Ошибка сервера',
-          });
+        next(err);
+        // res
+        //   .status(DefaultError)
+        //   .send({
+        //     message: 'Ошибка сервера',
+        //   });
       }
     });
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   // console.log('req.body', req.body);
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
@@ -182,23 +195,26 @@ const updateAvatar = (req, res) => {
     .catch((err) => {
       // console.log(err.name);
       if (err.message === 'user not found') {
-        res
-          .status(NotFoundError)
-          .send({
-            message: 'Пользователь с указанным _id не найден.',
-          });
+        next(new NotFoundError('Пользователь с указанным _id не найден.'));
+        // res
+        //   .status(NotFoundError)
+        //   .send({
+        //     message: 'Пользователь с указанным _id не найден.',
+        //   });
       } else if (err.name === 'ValidationError') {
-        res
-          .status(BadRequestError)
-          .send({
-            message: 'Переданы некорректные данные при обновлении аватара.',
-          });
+        next(new BadRequestError('Переданы некорректные данные при обновлении аватара.'));
+        // res
+        //   .status(BadRequestError)
+        //   .send({
+        //     message: 'Переданы некорректные данные при обновлении аватара.',
+        //   });
       } else {
-        res
-          .status(DefaultError)
-          .send({
-            message: 'Ошибка сервера',
-          });
+        next(err);
+        // res
+        //   .status(DefaultError)
+        //   .send({
+        //     message: 'Ошибка сервера',
+        //   });
       }
     });
 };

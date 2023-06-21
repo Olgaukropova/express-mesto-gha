@@ -1,11 +1,11 @@
 const BadRequestError = require('./BadRequestError');
-const Forbidden = require('./Forbidden');
+const ForbiddenError = require('./ForbiddenError');
 const NotFoundError = require('./NotFoundError');
 const DefaultError = require('./DefaultError');
 
 module.exports = {
   BadRequestError,
-  Forbidden,
+  ForbiddenError,
   NotFoundError,
   DefaultError,
 };
