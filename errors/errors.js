@@ -1,9 +1,11 @@
-const BadRequestError = 400;
-const NotFoundError = 404;
-const DefaultError = 500;
+const BadRequestError = require('./BadRequestError');
+const Forbidden = require('./Forbidden');
+const NotFoundError = require('./NotFoundError');
+const DefaultError = require('./DefaultError');
 
 module.exports = {
   BadRequestError,
+  Forbidden,
   NotFoundError,
   DefaultError,
 };

@@ -1,7 +1,12 @@
 const bcrypt = require('bcrypt');
 const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/users');
-const { BadRequestError, NotFoundError, DefaultError } = require('../errors/errors');
+const {
+  BadRequestError,
+  Forbidden,
+  NotFoundError,
+  DefaultError,
+} = require('../errors/errors');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -11,7 +16,7 @@ const getUsers = (req, res) => {
     .catch(() => res
       .status(DefaultError)
       .send({
-        message: 'Ошибка по умолчанию',
+        message: 'Ошибка сервера',
       }));
 };
 
@@ -37,7 +42,7 @@ const login = (req, res, next) => {
             });
             res.send({ data: user.toJSON() });
           } else {
-            res.status(403).send({ message: 'Неправильный пароль' });
+            res.status(Forbidden).send({ message: 'Неправильный пароль' });
           }
         });
     })
@@ -69,7 +74,7 @@ const getInfoUser = (req, res) => {
         res
           .status(DefaultError)
           .send({
-            message: 'Ошибка по умолчанию',
+            message: 'Ошибка сервера',
           });
       }
     });
@@ -97,7 +102,7 @@ const getUserById = (req, res) => {
         res
           .status(DefaultError)
           .send({
-            message: 'Ошибка по умолчанию',
+            message: 'Ошибка сервера',
           });
       }
     });
@@ -129,7 +134,7 @@ const createUser = (req, res) => {
         res
           .status(DefaultError)
           .send({
-            message: 'Ошибка по умолчанию',
+            message: 'Ошибка сервера',
           });
       }
     });
@@ -161,7 +166,7 @@ const updateUser = (req, res) => {
         res
           .status(DefaultError)
           .send({
-            message: 'Ошибка по умолчанию',
+            message: 'Ошибка сервера',
           });
       }
     });
@@ -191,7 +196,7 @@ const updateAvatar = (req, res) => {
         res
           .status(DefaultError)
           .send({
-            message: 'Ошибка по умолчанию',
+            message: 'Ошибка сервера',
           });
       }
     });

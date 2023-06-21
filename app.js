@@ -14,6 +14,9 @@ const cardRoutes = require('./routes/cards');
 const loginRoutes = require('./routes/login');
 
 const app = express();
+
+const { celebrate, Joi, errors} = require('celebrate');
+
 // console.log(process.env.JWT_SECRET);
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
@@ -22,21 +25,16 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6480bc0b5535b896735e95d6',
-  };
-  next();
-});
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// роуты, не требующие авторизации
 app.use(loginRoutes);
 
 app.use(auth);
 
+// роуты, которым авторизация нужна
 app.use(userRoutes);
 app.use(cardRoutes);
 
@@ -48,6 +46,8 @@ app.use((req, res) => {
       message: 'page not found',
     });
 });
+
+app.use(errors());
 
 app.use(errorHandler);
 

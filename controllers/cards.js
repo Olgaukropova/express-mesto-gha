@@ -1,5 +1,10 @@
 const Card = require('../models/cards');
-const { BadRequestError, NotFoundError, DefaultError } = require('../errors/errors');
+const {
+  BadRequestError,
+  NotFoundError,
+  DefaultError,
+  Forbidden,
+} = require('../errors/errors');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -9,7 +14,7 @@ const getCards = (req, res) => {
     .catch(() => res
       .status(DefaultError)
       .send({
-        message: 'Ошибка по умолчанию',
+        message: 'Ошибка сервера',
       }));
 };
 
@@ -24,7 +29,7 @@ const createCard = (req, res) => {
         res
           .status(DefaultError)
           .send({
-            message: 'Ошибка по умолчанию',
+            message: 'Ошибка сервера',
           });
       }
     });
@@ -32,28 +37,28 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.id, { runValidators: true })
-    .orFail(new Error('Указанный _id не найден'))
-    .then(() => res.status(200).send({ message: 'Карточка успешно удалена' }))
+    .exec()
+    .then((card) => {
+      if (!card) {
+        return res
+          .status(NotFoundError)
+          .send({ message: 'Карточка с указанным _id не найдена.' });
+      }
+      if (card.owner !== req.user._id) {
+        return res.status(Forbidden)
+          .send({ message: 'Попытка удалить чужую карточку' });
+      }
+      return res.status(200)
+        .send({ message: 'Карточка успешно удалена' });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res
-          .status(BadRequestError)
-          .send({
-            message: 'Переданы некорректные данные. ',
-          });
-      } else if (err.message === 'Указанный _id не найден') {
-        res
-          .status(NotFoundError)
-          .send({
-            message: 'Карточка с указанным _id не найдена.',
-          });
-      } else {
-        res
-          .status(DefaultError)
-          .send({
-            message: 'Ошибка по умолчанию',
-          });
+        return res.status(BadRequestError)
+          .send({ message: 'Переданы некорректные данные.' });
       }
+      return res
+        .status(DefaultError)
+        .send({ message: 'Ошибка сервера' });
     });
 };
 
@@ -84,7 +89,7 @@ const likeCard = (req, res) => {
         res
           .status(DefaultError)
           .send({
-            message: 'Ошибка по умолчанию',
+            message: 'Ошибка сервера',
           });
       }
     });
@@ -117,7 +122,7 @@ const dislikeCard = (req, res) => {
         res
           .status(DefaultError)
           .send({
-            message: 'Ошибка по умолчанию',
+            message: 'Ошибка сервера',
           });
       }
     });
