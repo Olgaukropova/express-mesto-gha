@@ -8,16 +8,17 @@ const {
   DefaultError,
 } = require('../errors/errors');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res
       .status(200)
       .send(users))
-    .catch(() => res
-      .status(DefaultError)
-      .send({
-        message: 'Ошибка сервера',
-      }));
+    .catch(next);
+  // () => res
+  // .status(DefaultError)
+  // .send({
+  //   message: 'Ошибка сервера',
+  // }));
 };
 
 const login = (req, res, next) => {

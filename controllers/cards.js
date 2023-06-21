@@ -18,20 +18,23 @@ const getCards = (req, res) => {
       }));
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
-        res.status(BadRequestError).send({ message: 'Вы ввели некорректные данные' });
-      } else {
-        res
-          .status(DefaultError)
-          .send({
-            message: 'Ошибка сервера',
-          });
+        return next(new BadRequestError('Вы ввели некорректные данные'));
+        // res.status(BadRequestError).send({ message: 'Вы ввели некорректные данные' });
       }
+      return next(err);
+      // else {
+      //   res
+      //     .status(DefaultError)
+      //     .send({
+      //       message: 'Ошибка сервера',
+      //     });
+      // }
     });
 };
 

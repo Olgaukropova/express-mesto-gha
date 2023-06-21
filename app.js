@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const cookieParser = require('cookie-parser');
+
+const { errors } = require('celebrate');
 const errorHandler = require('./middlewares/error');
 const auth = require('./middlewares/auth');
 
@@ -14,8 +16,6 @@ const cardRoutes = require('./routes/cards');
 const loginRoutes = require('./routes/login');
 
 const app = express();
-
-const { celebrate, Joi, errors} = require('celebrate');
 
 // console.log(process.env.JWT_SECRET);
 
