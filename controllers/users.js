@@ -204,7 +204,7 @@ const updateAvatar = (req, res, next) => {
         //   .send({
         //     message: 'Пользователь с указанным _id не найден.',
         //   });
-      } else if (err.name === 'ValidationError') {
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении аватара.'));
         // res
         //   .status(BadRequestError)
