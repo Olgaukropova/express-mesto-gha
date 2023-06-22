@@ -48,12 +48,21 @@ const validateUpdateAvatar = celebrate({
   }),
 });
 
+// валидация url
+const validateUrl = (url) => {
+  const result = validator.isURL(url);
+  if (result) {
+    return url;
+  }
+  throw new BadRequestError('Проблема с url');
+};
+
 // карточки
 // создание карточки
 const validateCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
-    link: Joi.string(),
+    link: Joi.string().custom(validateUrl),
   }),
 });
 
@@ -64,15 +73,6 @@ const validateCardId = celebrate({
   }),
 });
 
-// валидация url
-const validateUrl = (url) => {
-  const result = validator.isURL(url);
-  if (result) {
-    return url;
-  }
-  throw new BadRequestError('Проблема с url');
-};
-
 module.exports = {
   validateSignIn,
   validateSignUp,
@@ -81,5 +81,4 @@ module.exports = {
   validateUpdateAvatar,
   validateCreateCard,
   validateCardId,
-  validateUrl,
 };
