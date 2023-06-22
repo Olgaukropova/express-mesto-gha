@@ -1,4 +1,6 @@
+const { default: validator } = require('Validator');
 const { celebrate, Joi } = require('celebrate');
+const { BadRequestError } = require('../errors/BadRequestError');
 // const Validator = require('Validator');
 
 // аутентификация
@@ -17,7 +19,7 @@ const validateSignUp = celebrate({
     password: Joi.string().required().min(8).max(30),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string(),
+    avatar: Joi.string().uri(),
   }),
 });
 
@@ -42,7 +44,7 @@ const validateUpdateUser = celebrate({
 // обновление аватара
 const validateUpdateAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string(),
+    avatar: Joi.string().uri(),
   }),
 });
 
@@ -55,17 +57,21 @@ const validateCreateCard = celebrate({
   }),
 });
 
+// для удаленияб лайка и дизлайка карточки
 const validateCardId = celebrate({
   params: Joi.object().keys({
     id: Joi.string().required(),
   }),
 });
 
-// const validateSignIn = celebrate({
-//   body: joi.object().keys({
-
-//   })
-// })
+// валидация url
+const validateUrl = (url) => {
+  const result = validator.isURL(url);
+  if (result) {
+    return url;
+  }
+  throw new BadRequestError('Проблема с url');
+};
 
 module.exports = {
   validateSignIn,
@@ -75,4 +81,5 @@ module.exports = {
   validateUpdateAvatar,
   validateCreateCard,
   validateCardId,
+  validateUrl,
 };
