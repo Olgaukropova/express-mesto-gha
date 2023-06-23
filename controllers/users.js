@@ -6,14 +6,17 @@ const {
   ForbiddenError,
   NotFoundError,
   ConflictError,
+  UnauthorizedError,
 } = require('../errors/errors');
 
 const getUsers = (req, res, next) => {
+  console.log('1212');
   User.find({})
     .then((users) => res
       .status(200)
       .send(users))
     .catch(next);
+
   // () => res
   // .status(DefaultError)
   // .send({
@@ -25,7 +28,7 @@ const login = (req, res, next) => {
   // console.log('login', req.body);
   const { email, password } = req.body;
   User.findOne({ email }).select('+password')
-    .orFail(() => new NotFoundError('Пользователь не найден'))
+    .orFail(() => new UnauthorizedError('Пользователь не найден'))
     .then((user) => {
       bcrypt.compare(password, user.password)
         .then((isValidUser) => {
