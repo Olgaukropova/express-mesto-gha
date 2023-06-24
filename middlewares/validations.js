@@ -1,7 +1,6 @@
 const { default: validator } = require('Validator');
 const { celebrate, Joi } = require('celebrate');
 const { BadRequestError } = require('../errors/BadRequestError');
-// const Validator = require('Validator');
 
 // аутентификация
 // логин
