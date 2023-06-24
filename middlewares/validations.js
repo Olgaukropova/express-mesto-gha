@@ -1,6 +1,4 @@
-const { default: validator } = require('Validator');
 const { celebrate, Joi } = require('celebrate');
-const { BadRequestError } = require('../errors/BadRequestError');
 
 // аутентификация
 // логин
@@ -46,15 +44,6 @@ const validateUpdateAvatar = celebrate({
     avatar: Joi.string().pattern(/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/),
   }),
 });
-
-// валидация url
-// const validateUrl = (url) => {
-//   const result = validator.isURL(url);
-//   if (result) {
-//     return url;
-//   }
-//   throw new BadRequestError('Проблема с url');
-// };
 
 // карточки
 // создание карточки
