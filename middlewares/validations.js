@@ -48,13 +48,13 @@ const validateUpdateAvatar = celebrate({
 });
 
 // валидация url
-const validateUrl = (url) => {
-  const result = validator.isURL(url);
-  if (result) {
-    return url;
-  }
-  throw new BadRequestError('Проблема с url');
-};
+// const validateUrl = (url) => {
+//   const result = validator.isURL(url);
+//   if (result) {
+//     return url;
+//   }
+//   throw new BadRequestError('Проблема с url');
+// };
 
 // карточки
 // создание карточки
