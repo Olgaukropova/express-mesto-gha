@@ -11,10 +11,10 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
-    validate: {
-      validator: (value) => Validator.isURL(value),
-      message: 'Введен некорректный URL-адрес',
-    },
+    // validate: {
+    //   validator: (value) => Validator.isURL(value),
+    //   message: 'Введен некорректный URL-адрес',
+    // },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
