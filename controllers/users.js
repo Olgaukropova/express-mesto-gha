@@ -28,7 +28,7 @@ const login = (req, res, next) => {
             // создать jwt
             const jwt = jsonWebToken.sign({
               _id: user._id,
-            }, process.env.JWT_SECRET);
+            }, 'SECRET');
             // прикрепить его к куке
             res.cookie('jwt', jwt, {
               maxAge: 360000,
