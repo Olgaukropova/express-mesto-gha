@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const errorHandler = require('./middlewares/error');
 const auth = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
@@ -29,6 +30,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.use(requestLogger); // подключаем логгер запросов
+
 // роуты, не требующие авторизации
 app.use(loginRoutes);
 
@@ -46,6 +49,8 @@ app.use((req, res) => {
       message: 'page not found',
     });
 });
+
+app.use(errorLogger); // подключаем логгер ошибок
 
 app.use(errors());
 

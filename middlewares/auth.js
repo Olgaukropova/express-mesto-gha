@@ -11,7 +11,7 @@ const auth = (req, res, next) => {
   let payload;
   // jwt.verify вернёт пейлоуд токена, если тот прошёл проверку
   try {
-    payload = jwt.verify(token, 'SECRET');
+    payload = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     console.log(err, 'auth');
     next(err);
